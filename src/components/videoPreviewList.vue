@@ -10,7 +10,7 @@
         <p>暂无搜索记录</p>
     </div>
     <div v-else class="video-preview" v-for="(page, index) in pages" :key="index">
-    <div class="preview-item" v-for="item in page" :key="item.id" @mouseenter="onMouseEnter(item)" @click="onMouseClick(item)">
+    <div class="preview-item" v-if="index === currentPage - 1" v-for="item in page" :key="item.id" @mouseenter="onMouseEnter(item)" @click="onMouseClick(item)">
         <div class="overlay-title">
             {{ item.title }}
         </div>
@@ -25,6 +25,26 @@
         </div>
     </div>
     </div>
+
+    <!-- 分页栏 -->
+    <div class="page-navigation">
+    <ul>
+        <!-- 上一页 -->
+        <li v-if="currentPage > 1" @click="prevPage"><i class="fa fa-angle-left"></i></li>
+
+        <!-- 页码按钮 -->
+        <li v-for="(page, index) in pageCount"
+            :key="index"
+            :class="{ 'current-page': currentPage === index + 1 }"
+            @click="jumpToPage(index + 1)">
+        {{ index + 1 }}
+        </li>
+
+        <!-- 下一页 -->
+        <li v-if="currentPage < pageCount" @click="nextPage"><i class="fa fa-angle-right"></i></li>
+    </ul>
+    </div>
+
 </div>
 </template>
     
@@ -82,6 +102,7 @@
     flex-direction: row;
     justify-content: center;
     align-items: center;
+    margin-bottom: 2%;
     padding: 2%;
 }
 
@@ -191,6 +212,39 @@
     background-color: rgb(255, 255, 255);
     transition: width 0.2s;
 }
+
+.page-navigation {
+  position: absolute;
+  margin-bottom: 1%;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.page-navigation ul {
+  list-style: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.page-navigation li {
+  margin: 0 10px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #eee;
+  color: #333;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.page-navigation li.current-page {
+  background-color: #333;
+  color: #fff;
+}
 </style>
 
 <script>
@@ -211,6 +265,7 @@ export default {
         return {
             currentHover: null,
             pageSize: 9,
+            currentPage: 1,
         };
     },
     computed: {
@@ -224,6 +279,9 @@ export default {
                 pages.push(page);
             }
             return pages;
+        },
+        pageCount() {
+            return Math.ceil(this.items.length / this.pageSize); // 计算总页数
         },
     },
     methods: {
@@ -242,6 +300,15 @@ export default {
             const video = event.target;
             // 动态生成currentTime属性的值
             video.currentTime = `${currentTime}`;
+        },
+        prevPage() {
+            this.currentPage--;
+        },
+        nextPage() {
+            this.currentPage++;
+        },
+        jumpToPage(index) {
+            this.currentPage = index;
         }
     },
 };

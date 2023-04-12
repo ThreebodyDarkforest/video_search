@@ -24,7 +24,7 @@ export default {
       try {
         const response = await axios.get(process.env.VUE_APP_BACKEND_URL + '/video/login/', {
           headers: {
-            'Authorization': 'Token 4PrAX1QpCXLjdVSlUTiRL3iOY5UiU8v19Hr4',
+            'Authorization': 'Token ' + process.env.VUE_APP_TOKEN.trim(),
             'Content-Type': 'application/json',
           }
         })
