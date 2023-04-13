@@ -10,7 +10,8 @@
         <p>暂无搜索记录</p>
     </div>
     <div v-else class="video-preview" v-for="(page, index) in pages" :key="index">
-    <div class="preview-item" v-if="index === currentPage - 1" v-for="item in page" :key="item.id" @mouseenter="onMouseEnter(item)" @click="onMouseClick(item)">
+    <template v-for="item in page">
+    <div class="preview-item" v-if="index === currentPage - 1"  :key="item.id" @mouseenter="onMouseEnter(item)" @click="onMouseClick(item)">
         <div class="overlay-title">
             {{ item.title }}
         </div>
@@ -24,6 +25,7 @@
             <img :src="item.thumbnail" class="preview-video" id='previewImage'>
         </div>
     </div>
+    </template>
     </div>
 
     <!-- 分页栏 -->
@@ -214,9 +216,8 @@
 }
 
 .page-navigation {
-  position: absolute;
-  margin-bottom: 1%;
-  bottom: 0;
+  position: relative;
+  margin-top: 1rem;
   left: 50%;
   transform: translateX(-50%);
 }

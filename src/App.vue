@@ -42,6 +42,10 @@ export default {
     },
     async handleSearch(searchResult) {
       const videoitems = [];
+      if (this.cancelFetchPreview) {
+        this.cancelFetchPreview.forEach(cancel => cancel());
+        this.cancelFetchPreview = null;
+      }
       try {
         // 使用Promise.all()方法等待所有异步操作完成
         const promises = searchResult.result.map((item, i) => {
@@ -65,11 +69,18 @@ export default {
         console.log(this.videoItems);
 
         // 异步获取真实封面
+        // 在 handleSearch 方法中
+        const cancelTokens = [];
         const af_promises = searchResult.result.map((item, i) => {
-          return getVideo(this.sid, item, true).then(res => {
+          const source = axios.CancelToken.source();
+          cancelTokens.push(source.cancel);
+
+          return getVideo(this.sid, item, true, source.token).then(res => {
             this.videoItems[i].thumbnail = res.thumbURL;
           });
         });
+
+        this.cancelFetchPreview = cancelTokens;
         await Promise.all(af_promises);
       } catch (error) {
         console.error(error);
@@ -81,6 +92,7 @@ export default {
       sid: this.getSid(),
       videoItems: [],
       isSearching: false,
+      cancelFetchPreview: null,
     }
   }
 }

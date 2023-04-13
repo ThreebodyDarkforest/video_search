@@ -1,8 +1,8 @@
 import axios from 'axios';
 
-export async function getVideo(sid, item, base64 = false) {
+export async function getVideo(sid, item, base64 = false, cancelToken = null) {
     const headers = {
-        'Authorization': 'Token 4PrAX1QpCXLjdVSlUTiRL3iOY5UiU8v19Hr4',
+        'Authorization': 'Token ' + process.env.VUE_APP_TOKEN.trim(),
         'Content-Type': 'application/json',
     };
     let data = {
@@ -12,7 +12,10 @@ export async function getVideo(sid, item, base64 = false) {
         'progress': base64 ? item.sec : null,
     }
     try {
-        const response = await axios.post(process.env.VUE_APP_BACKEND_URL + '/video/url/', data, { headers });
+        const response = await axios.post(process.env.VUE_APP_BACKEND_URL + '/video/url/', data, { 
+          headers,
+          cancelToken,
+        });
         return response.data.result;
     } catch (error) {
         console.log(error)
